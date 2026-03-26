@@ -35,7 +35,6 @@ def get_dict_info() -> dict:
             "git_version": version.git_version,
             "platform": version.platform
         }
-        print(f"✅ 集群版本: {version.git_version}")
     except Exception as e:
         print(f"⚠️ 获取版本失败: {e}")
 
@@ -60,7 +59,6 @@ def get_dict_info() -> dict:
                 }
             }
             info["nodes"].append(node_info)
-        print(f"✅ 获取到 {len(info['nodes'])} 个节点")
     except Exception as e:
         print(f"⚠️ 获取节点失败: {e}")
 
@@ -68,7 +66,6 @@ def get_dict_info() -> dict:
     try:
         namespaces = v1.list_namespace()
         info["namespaces"] = [ns.metadata.name for ns in namespaces.items]
-        print(f"✅ 获取到 {len(info['namespaces'])} 个命名空间")
     except Exception as e:
         print(f"⚠️ 获取命名空间失败: {e}")
 
@@ -79,7 +76,6 @@ def get_dict_info() -> dict:
         for pod in pods.items:
             phase = pod.status.phase
             info["pods_summary"]["by_phase"][phase] = info["pods_summary"]["by_phase"].get(phase, 0) + 1
-        print(f"✅ 全集群 Pods: {info['pods_summary']['total']} 个")
     except Exception as e:
         print(f"⚠️ 获取 Pods 失败: {e}")
 
@@ -87,13 +83,10 @@ def get_dict_info() -> dict:
     try:
         deployments = apps_v1.list_deployment_for_all_namespaces()
         info["deployments_summary"]["total"] = len(deployments.items)
-        print(f"✅ 全集群 Deployments: {info['deployments_summary']['total']} 个")
     except Exception as e:
         print(f"⚠️ 获取 Deployments 失败: {e}")
 
     # 输出 JSON（方便后续处理或 API 返回）
-    print("\n" + "="*60)
-    print("📊 集群信息汇总（JSON 格式）:")
-    print(json.dumps(info, indent=2, ensure_ascii=False, default=str))
+    # print(json.dumps(info, indent=2, ensure_ascii=False, default=str))
     dict_to_json = json.dumps(info, indent=2, ensure_ascii=False, default=str)
     return dict_to_json
