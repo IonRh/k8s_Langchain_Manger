@@ -1,0 +1,70 @@
+{
+  "dry_run": true,
+  "max_actions_per_cycle": 5,
+  "rules": [
+    {
+      "name": "image_pull_backoff",
+      "match": {
+        "container_reason": ["ImagePullBackOff", "ErrImagePull", "InvalidImageName"]
+      },
+      "action": {
+        "type": "patch_image",
+        "image": "REPLACE_ME",
+        "container": null
+      }
+    },
+    {
+      "name": "crash_loop_backoff",
+      "match": {
+        "container_reason": "CrashLoopBackOff",
+        "restart_count_gt": 3
+      },
+      "action": {
+        "type": "rollout_restart"
+      }
+    },
+    {
+      "name": "oom_killed",
+      "match": {
+        "container_last_reason": "OOMKilled"
+      },
+      "action": {
+        "type": "patch_resources",
+        "requests": {
+          "memory": "REPLACE_ME"
+        },
+        "limits": {
+          "memory": "REPLACE_ME"
+        }
+      }
+    },
+    {
+      "name": "pending_unschedulable",
+      "match": {
+        "phase": "Pending",
+        "unschedulable": true
+      },
+      "action": {
+        "type": "delete_pod"
+      }
+    },
+    {
+      "name": "pending_general",
+      "match": {
+        "phase": "Pending"
+      },
+      "action": {
+        "type": "delete_pod"
+      }
+    },
+    {
+      "name": "container_config_error",
+      "match": {
+        "container_reason": ["CreateContainerConfigError", "RunContainerError"]
+      },
+      "action": {
+        "type": "rollout_restart"
+      }
+    }
+  ]
+}
